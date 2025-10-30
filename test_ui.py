@@ -240,8 +240,48 @@ async def test_ui():
                 else:
                     print(f"  ⚠ Suggestion {i+1} does NOT contain D66!")
         
-        # Test 10: Check info modal
-        print("\n--- Test 10: Testing info modal ---")
+        # Test 10: Verify constraint doesn't increase agreement scores
+        print("\n--- Test 10: Verifying constraint logic ---")
+        await page.evaluate('window.scrollTo(0, 0)')
+        await page.wait_for_timeout(500)
+        
+        # First, get unconstrained best score
+        await required_party_select.select_option('')  # No preference
+        await find_btn.click()
+        await page.wait_for_timeout(2000)
+        
+        suggestions = await page.query_selector_all('.suggestion-item')
+        if suggestions:
+            first_text = await suggestions[0].text_content()
+            import re
+            match = re.search(r'(\d+\.?\d*)% eensgezind', first_text)
+            if match:
+                unconstrained_score = float(match.group(1))
+                print(f"✓ Best unconstrained coalition: {unconstrained_score}% agreement")
+        
+        # Now get constrained score with PVV
+        await required_party_select.select_option('PVV')
+        await find_btn.click()
+        await page.wait_for_timeout(2000)
+        
+        suggestions = await page.query_selector_all('.suggestion-item')
+        if suggestions:
+            first_text = await suggestions[0].text_content()
+            match = re.search(r'(\d+\.?\d*)% eensgezind', first_text)
+            if match:
+                constrained_score = float(match.group(1))
+                print(f"✓ Best PVV-constrained coalition: {constrained_score}% agreement")
+                
+                if constrained_score <= unconstrained_score:
+                    print(f"✅ PASS: Constrained ({constrained_score}%) ≤ Unconstrained ({unconstrained_score}%)")
+                else:
+                    print(f"❌ FAIL: Constrained ({constrained_score}%) > Unconstrained ({unconstrained_score}%)")
+                    print("   Adding a constraint should not increase the best agreement score!")
+        
+        await page.screenshot(path='screenshots/13_constraint_verification.png', full_page=True)
+        
+        # Test 11: Check info modal
+        print("\n--- Test 11: Testing info modal ---")
         info_btn = await page.query_selector('#infoButton')
         await info_btn.click()
         await page.wait_for_timeout(500)
@@ -253,6 +293,8 @@ async def test_ui():
         await modal_close.click()
         await page.wait_for_timeout(500)
         print("✓ Info modal closed")
+        
+        await page.screenshot(path='screenshots/14_final_state.png', full_page=True)
         
         print("\n✅ All tests completed! Check the screenshots/ directory for results.")
         print("Browser will close in 5 seconds...")

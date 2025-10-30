@@ -248,30 +248,32 @@ function findBestCoalitions() {
 
 function generateMajorityCoalitions(requiredPartyName = null) {
     const coalitions = [];
-    let availableParties = parties;
-    let requiredParty = null;
     
-    // If a required party is specified, separate it from available parties
-    if (requiredPartyName) {
-        requiredParty = parties.find(p => p.name === requiredPartyName);
-        if (!requiredParty) {
-            return coalitions; // Party not found
-        }
-        availableParties = parties.filter(p => p.name !== requiredPartyName);
+    // Separate required party from available parties
+    const requiredParties = requiredPartyName
+        ? parties.filter(p => p.name === requiredPartyName)
+        : [];
+    
+    if (requiredPartyName && requiredParties.length === 0) {
+        return coalitions; // Required party not found
     }
     
-    const n = availableParties.length;
+    const availableParties = requiredPartyName
+        ? parties.filter(p => p.name !== requiredPartyName)
+        : parties;
     
-    // Generate all possible combinations (up to 5 parties for performance)
-    for (let size = 1; size <= Math.min(4, n); size++) {
+    // Calculate how many additional parties we can add (max 5 total)
+    const maxSize = Math.min(5 - requiredParties.length, availableParties.length);
+    
+    // Generate combinations of available parties
+    for (let size = 1; size <= maxSize; size++) {
         const combinations = getCombinations(availableParties, size);
         for (const combo of combinations) {
-            // Add required party if specified
-            const fullCombo = requiredParty ? [requiredParty, ...combo] : combo;
+            const coalition = [...requiredParties, ...combo];
+            const seats = coalition.reduce((sum, p) => sum + p.seats, 0);
             
-            const seats = fullCombo.reduce((sum, p) => sum + p.seats, 0);
             if (seats >= 76) {
-                coalitions.push(fullCombo);
+                coalitions.push(coalition);
             }
         }
     }
