@@ -11,7 +11,45 @@
         <header>
             <h1>🇳🇱 Coalitie Simulator 2025</h1>
             <p>Sleep partijen naar de coalitie om te zien hoe zij over stellingen denken</p>
+            <button id="infoButton" class="info-button" title="Informatie over databronnen">ℹ️</button>
         </header>
+
+        <!-- Info Modal -->
+        <div id="infoModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close">&times;</span>
+                <h2>📊 Over deze tool</h2>
+                <div class="info-section">
+                    <h3>Databronnen</h3>
+                    <div id="dataSourcesInfo">Laden...</div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>Hoe werkt het?</h3>
+                    <ul>
+                        <li><strong>Sleep partijen</strong> van "Beschikbare Partijen" naar "Coalitie"</li>
+                        <li><strong>Zie direct</strong> hoeveel zetels de coalitie heeft (76 nodig voor meerderheid)</li>
+                        <li><strong>Bekijk stellingen</strong> om te zien hoe de coalitie denkt over elk onderwerp</li>
+                        <li><strong>Gebruik de finder</strong> om automatisch de meest harmonieuze coalitie te vinden</li>
+                    </ul>
+                </div>
+                
+                <div class="info-section">
+                    <h3>Emoji Betekenis</h3>
+                    <ul>
+                        <li>🤝 <strong>Hoge eensgezindheid</strong> - ≥80% van coalitie eens over standpunt</li>
+                        <li>😐 <strong>Gemiddelde eensgezindheid</strong> - 60-80% eens</li>
+                        <li>⚡ <strong>Verdeeld</strong> - <60% eens, coalitie is verdeeld over dit onderwerp</li>
+                    </ul>
+                </div>
+                
+                <div class="info-section">
+                    <h3>Open Source</h3>
+                    <p>Deze tool is open source en beschikbaar op <a href="https://github.com/claudeviool/kieswijzer-2025" target="_blank">GitHub</a>.</p>
+                    <p><small>Gemaakt met ❤️ voor transparante politieke analyse</small></p>
+                </div>
+            </div>
+        </div>
 
         <!-- Coalition Builder -->
         <section class="coalition-builder">

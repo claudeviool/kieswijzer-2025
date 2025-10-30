@@ -2,6 +2,8 @@
 let parties = [];
 let statements = [];
 let coalitionParties = new Set();
+let statementsMetadata = null;
+let seatsMetadata = null;
 
 // Load data
 async function loadData() {
@@ -10,11 +12,13 @@ async function loadData() {
         const seatsResponse = await fetch('party_seats_exitpoll_2025.json');
         const seatsData = await seatsResponse.json();
         parties = seatsData.parties.filter(p => p.seats > 0);
+        seatsMetadata = seatsData.metadata;
         
         // Load statements
         const statementsResponse = await fetch('statements_wide.json');
         const statementsData = await statementsResponse.json();
         statements = statementsData.statements;
+        statementsMetadata = statementsData.metadata;
         
         initializeApp();
     } catch (error) {
@@ -98,6 +102,51 @@ function setupEventListeners() {
     
     // Coalition finder
     document.getElementById('findCoalition').addEventListener('click', findBestCoalitions);
+    
+    // Info modal
+    const infoButton = document.getElementById('infoButton');
+    const infoModal = document.getElementById('infoModal');
+    const modalClose = document.querySelector('.modal-close');
+    
+    infoButton.addEventListener('click', () => {
+        populateInfoModal();
+        infoModal.classList.add('show');
+    });
+    
+    modalClose.addEventListener('click', () => {
+        infoModal.classList.remove('show');
+    });
+    
+    infoModal.addEventListener('click', (e) => {
+        if (e.target === infoModal) {
+            infoModal.classList.remove('show');
+        }
+    });
+}
+
+function populateInfoModal() {
+    const container = document.getElementById('dataSourcesInfo');
+    
+    let html = '';
+    
+    // Statements info
+    if (statementsMetadata) {
+        html += `
+            <p><strong>Stellingen:</strong> <a href="${statementsMetadata.url}" target="_blank">${statementsMetadata.source}</a></p>
+            <p>${statementsMetadata.total_statements} stellingen over verschillende politieke onderwerpen, met standpunten van ${statementsMetadata.total_parties} politieke partijen.</p>
+        `;
+    }
+    
+    // Seats info
+    if (seatsMetadata) {
+        html += `
+            <p><strong>Zetelverdeling:</strong> ${seatsMetadata.source}</p>
+            <p>Exit poll uitgevoerd door ${seatsMetadata.pollster} op ${seatsMetadata.date}.</p>
+            <p><small>${seatsMetadata.note}</small></p>
+        `;
+    }
+    
+    container.innerHTML = html;
 }
 
 // Find the most harmonious coalitions
