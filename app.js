@@ -600,11 +600,17 @@ function updateStatementBars() {
 
 function updateStatementIndicator(statement) {
     const indicator = document.getElementById(`indicator-${statement.id}`);
+    const statementItem = document.querySelector(`[data-statement-id="${statement.id}"]`);
+    
     if (!indicator) return;
     
     if (coalitionParties.size === 0) {
         indicator.textContent = '';
         indicator.title = '';
+        if (statementItem) {
+            statementItem.style.borderLeft = '';
+            statementItem.style.boxShadow = '';
+        }
         return;
     }
     
@@ -612,6 +618,10 @@ function updateStatementIndicator(statement) {
     const coalitionPartiesList = parties.filter(p => coalitionParties.has(p.name));
     if (coalitionPartiesList.length === 0) {
         indicator.textContent = '';
+        if (statementItem) {
+            statementItem.style.borderLeft = '';
+            statementItem.style.boxShadow = '';
+        }
         return;
     }
     
@@ -630,6 +640,10 @@ function updateStatementIndicator(statement) {
     const totalSeats = agreeSeats + neutralSeats + disagreeSeats;
     if (totalSeats === 0) {
         indicator.textContent = '';
+        if (statementItem) {
+            statementItem.style.borderLeft = '';
+            statementItem.style.boxShadow = '';
+        }
         return;
     }
     
@@ -643,19 +657,31 @@ function updateStatementIndicator(statement) {
     else if (maxSeats === disagreeSeats) majorityStance = 'oneens';
     else majorityStance = 'neutraal';
     
-    // Set emoji based on how unified the coalition is
+    // Set emoji and visual accent based on how unified the coalition is
     if (agreementRate >= 80) {
         indicator.textContent = '🤝';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Hoge eensgezindheid`;
         indicator.style.fontSize = '1.5em';
+        if (statementItem) {
+            statementItem.style.borderLeft = '4px solid #28a745';
+            statementItem.style.boxShadow = '0 2px 8px rgba(40, 167, 69, 0.15)';
+        }
     } else if (agreementRate >= 60) {
         indicator.textContent = '😐';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Gemiddelde eensgezindheid`;
         indicator.style.fontSize = '1.5em';
+        if (statementItem) {
+            statementItem.style.borderLeft = '4px solid #ffc107';
+            statementItem.style.boxShadow = '0 2px 8px rgba(255, 193, 7, 0.15)';
+        }
     } else {
         indicator.textContent = '⚡';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Verdeeld (${agreeSeats} eens, ${neutralSeats} neutraal, ${disagreeSeats} oneens)`;
         indicator.style.fontSize = '1.5em';
+        if (statementItem) {
+            statementItem.style.borderLeft = '4px solid #dc3545';
+            statementItem.style.boxShadow = '0 2px 8px rgba(220, 53, 69, 0.15)';
+        }
     }
 }
 
