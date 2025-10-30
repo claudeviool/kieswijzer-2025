@@ -1,26 +1,29 @@
 {
   "metadata": {
-    "source": "RTL Nieuws / NOS Exit Poll",
+    "source": "ANP Verkiezingsdienst - Voorlopige Uitslag (97.7% geteld)",
     "election": "Tweede Kamerverkiezing 2025",
-    "date": "2025-10-29",
-    "pollster": "Ipsos I&O",
+    "date": "2025-10-30",
+    "time": "07:51",
+    "pollster": "ANP",
     "total_seats": 150,
-    "note": "Exit poll results - final results may differ"
+    "note": "Voorlopige uitslag - definitieve uitslag volgt na telling buitenland en BES-eilanden. D66 en PVV nek-aan-nek met verschil van 2.300 stemmen."
   },
   "parties": [
     {
       "name": "D66",
-      "seats": 27,
+      "seats": 26,
       "seats_2023": 24,
-      "change": 3,
-      "percentage": 18.0
+      "change": 2,
+      "percentage": 17.3,
+      "note": "Nipt voor op PVV met 2.300 stemmen verschil"
     },
     {
       "name": "PVV",
-      "seats": 25,
+      "seats": 26,
       "seats_2023": 37,
-      "change": -12,
-      "percentage": 16.7
+      "change": -11,
+      "percentage": 17.3,
+      "note": "Nek-aan-nek met D66, wacht op definitieve uitslag"
     },
     {
       "name": "VVD",
