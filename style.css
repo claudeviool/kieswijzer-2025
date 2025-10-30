@@ -741,6 +741,98 @@ header p {
     font-style: italic;
 }
 
+/* Exclusion Selector Styles */
+.exclusion-selector {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.exclusion-selector label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.exclusion-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.exclusion-controls select {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.exclusion-controls span {
+    font-weight: bold;
+    color: #6c757d;
+}
+
+.add-exclusion-btn {
+    padding: 8px 16px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.add-exclusion-btn:hover {
+    background: #218838;
+}
+
+.add-exclusion-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+.exclusion-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 30px;
+}
+
+.exclusion-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #dc3545;
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+.exclusion-item button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.exclusion-item button:hover {
+    opacity: 1;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .party-pools {

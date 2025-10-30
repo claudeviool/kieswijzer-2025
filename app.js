@@ -4,6 +4,7 @@ let statements = [];
 let coalitionParties = new Set();
 let statementsMetadata = null;
 let seatsMetadata = null;
+let excludedPairs = new Set(); // Store excluded party pairs as "Party1|Party2"
 
 // Party name mapping: NOS API → Statements data
 const PARTY_NAME_MAP = {
@@ -80,6 +81,7 @@ function initializeApp() {
     renderStatements();
     updateCoalitionBar();
     populateRequiredPartyDropdown();
+    populateExclusionDropdowns();
     setupEventListeners();
 }
 
@@ -152,6 +154,9 @@ function setupEventListeners() {
     // Coalition finder
     document.getElementById('findCoalition').addEventListener('click', findBestCoalitions);
     
+    // Exclusion controls
+    document.getElementById('addExclusion').addEventListener('click', addExclusion);
+    
     // Info modal
     const infoButton = document.getElementById('infoButton');
     const infoModal = document.getElementById('infoModal');
@@ -215,6 +220,87 @@ function populateRequiredPartyDropdown() {
         option.value = party.name;
         option.textContent = `${party.name} (${party.seats} zetels)`;
         select.appendChild(option);
+    });
+}
+
+function populateExclusionDropdowns() {
+    const select1 = document.getElementById('excludeParty1');
+    const select2 = document.getElementById('excludeParty2');
+    
+    // Clear existing options
+    select1.innerHTML = '<option value="">Selecteer partij...</option>';
+    select2.innerHTML = '<option value="">Selecteer partij...</option>';
+    
+    // Add all parties as options
+    parties.forEach(party => {
+        const option1 = document.createElement('option');
+        option1.value = party.name;
+        option1.textContent = party.name;
+        select1.appendChild(option1);
+        
+        const option2 = document.createElement('option');
+        option2.value = party.name;
+        option2.textContent = party.name;
+        select2.appendChild(option2);
+    });
+}
+
+function addExclusion() {
+    const party1 = document.getElementById('excludeParty1').value;
+    const party2 = document.getElementById('excludeParty2').value;
+    
+    if (!party1 || !party2) {
+        alert('Selecteer beide partijen om een uitsluiting toe te voegen.');
+        return;
+    }
+    
+    if (party1 === party2) {
+        alert('Selecteer twee verschillende partijen.');
+        return;
+    }
+    
+    // Store as sorted pair to avoid duplicates (A+B = B+A)
+    const pair = [party1, party2].sort().join('|');
+    
+    if (excludedPairs.has(pair)) {
+        alert('Deze combinatie is al uitgesloten.');
+        return;
+    }
+    
+    excludedPairs.add(pair);
+    updateExclusionList();
+    
+    // Reset dropdowns
+    document.getElementById('excludeParty1').value = '';
+    document.getElementById('excludeParty2').value = '';
+}
+
+function removeExclusion(pair) {
+    excludedPairs.delete(pair);
+    updateExclusionList();
+}
+
+// Make removeExclusion globally accessible for onclick handlers
+window.removeExclusion = removeExclusion;
+
+function updateExclusionList() {
+    const list = document.getElementById('exclusionList');
+    
+    if (excludedPairs.size === 0) {
+        list.innerHTML = '<span style="color: #6c757d; font-size: 0.9em;">Geen uitsluitingen</span>';
+        return;
+    }
+    
+    list.innerHTML = '';
+    excludedPairs.forEach(pair => {
+        const [party1, party2] = pair.split('|');
+        const item = document.createElement('div');
+        item.className = 'exclusion-item';
+        item.innerHTML = `
+            <span>${party1} ⚡ ${party2}</span>
+            <button onclick="removeExclusion('${pair}')" title="Verwijder uitsluiting">×</button>
+        `;
+        list.appendChild(item);
     });
 }
 
@@ -288,13 +374,27 @@ function generateMajorityCoalitions(requiredPartyName = null) {
             const coalition = [...requiredParties, ...combo];
             const seats = coalition.reduce((sum, p) => sum + p.seats, 0);
             
-            if (seats >= 76) {
+            // Check if coalition has majority and doesn't contain excluded pairs
+            if (seats >= 76 && !hasExcludedPair(coalition)) {
                 coalitions.push(coalition);
             }
         }
     }
     
     return coalitions;
+}
+
+function hasExcludedPair(coalition) {
+    // Check if any pair in the coalition is in the excluded pairs set
+    for (let i = 0; i < coalition.length; i++) {
+        for (let j = i + 1; j < coalition.length; j++) {
+            const pair = [coalition[i].name, coalition[j].name].sort().join('|');
+            if (excludedPairs.has(pair)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 function getCombinations(arr, size) {

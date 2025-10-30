@@ -87,6 +87,20 @@
                             <option value="">Geen voorkeur</option>
                         </select>
                     </div>
+                    <div class="exclusion-selector">
+                        <label>🚫 Sluit combinaties uit:</label>
+                        <div class="exclusion-controls">
+                            <select id="excludeParty1">
+                                <option value="">Selecteer partij 1</option>
+                            </select>
+                            <span>+</span>
+                            <select id="excludeParty2">
+                                <option value="">Selecteer partij 2</option>
+                            </select>
+                            <button id="addExclusion" class="add-exclusion-btn" title="Voeg uitsluiting toe">➕</button>
+                        </div>
+                        <div id="exclusionList" class="exclusion-list"></div>
+                    </div>
                 </div>
                 <div id="coalitionSuggestions" class="coalition-suggestions"></div>
             </div>

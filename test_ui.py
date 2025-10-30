@@ -294,7 +294,86 @@ async def test_ui():
         await page.wait_for_timeout(500)
         print("✓ Info modal closed")
         
-        await page.screenshot(path='screenshots/14_final_state.png', full_page=True)
+        # Test 12: Test exclusion feature
+        print("\n--- Test 12: Testing party exclusion feature ---")
+        await page.evaluate('window.scrollTo(0, 0)')
+        await page.wait_for_timeout(500)
+        
+        # Select PVV and GroenLinks-PvdA as incompatible
+        exclude_party1 = await page.query_selector('#excludeParty1')
+        exclude_party2 = await page.query_selector('#excludeParty2')
+        add_exclusion_btn = await page.query_selector('#addExclusion')
+        
+        await exclude_party1.select_option('PVV')
+        await exclude_party2.select_option('GroenLinks-PvdA')
+        await page.wait_for_timeout(300)
+        await page.screenshot(path='screenshots/15_exclusion_selected.png', full_page=True)
+        print("✓ Selected PVV and GroenLinks-PvdA for exclusion")
+        
+        # Add the exclusion
+        await add_exclusion_btn.click()
+        await page.wait_for_timeout(500)
+        await page.screenshot(path='screenshots/16_exclusion_added.png', full_page=True)
+        print("✓ Exclusion added")
+        
+        # Verify exclusion appears in list
+        exclusion_list = await page.query_selector('#exclusionList')
+        exclusion_text = await exclusion_list.text_content()
+        if 'PVV' in exclusion_text and 'GroenLinks-PvdA' in exclusion_text:
+            print("✓ Exclusion displayed in list")
+        else:
+            print("⚠ Exclusion not properly displayed")
+        
+        # Test coalition finder with exclusion
+        await required_party_select.select_option('')  # No preference
+        await find_btn.click()
+        await page.wait_for_timeout(2000)
+        await page.screenshot(path='screenshots/17_finder_with_exclusion.png', full_page=True)
+        print("✓ Coalition finder executed with exclusion")
+        
+        # Verify no suggestions contain both PVV and GroenLinks-PvdA
+        suggestions = await page.query_selector_all('.suggestion-item')
+        if suggestions:
+            print(f"✓ Found {len(suggestions)} coalition suggestions")
+            violations = 0
+            for i, item in enumerate(suggestions):
+                text = await item.text_content()
+                if 'PVV' in text and 'GroenLinks-PvdA' in text:
+                    violations += 1
+                    print(f"  ❌ Suggestion {i+1} contains BOTH excluded parties!")
+            
+            if violations == 0:
+                print("✅ PASS: No coalitions contain both excluded parties")
+            else:
+                print(f"❌ FAIL: {violations} coalitions violate exclusion rule")
+        
+        # Add another exclusion
+        await exclude_party1.select_option('VVD')
+        await exclude_party2.select_option('PVV')
+        await add_exclusion_btn.click()
+        await page.wait_for_timeout(500)
+        await page.screenshot(path='screenshots/18_second_exclusion_added.png', full_page=True)
+        print("✓ Added second exclusion (VVD + PVV)")
+        
+        # Test finder again
+        await find_btn.click()
+        await page.wait_for_timeout(2000)
+        await page.screenshot(path='screenshots/19_finder_with_two_exclusions.png', full_page=True)
+        print("✓ Coalition finder with two exclusions")
+        
+        # Test removing an exclusion
+        remove_btns = await page.query_selector_all('.exclusion-item button')
+        if remove_btns:
+            await remove_btns[0].click()
+            await page.wait_for_timeout(500)
+            await page.screenshot(path='screenshots/20_exclusion_removed.png', full_page=True)
+            print("✓ Removed first exclusion")
+            
+            # Verify only one exclusion remains
+            exclusion_items = await page.query_selector_all('.exclusion-item')
+            print(f"✓ {len(exclusion_items)} exclusion(s) remaining")
+        
+        await page.screenshot(path='screenshots/21_final_state.png', full_page=True)
         
         print("\n✅ All tests completed! Check the screenshots/ directory for results.")
         print("Browser will close in 5 seconds...")
