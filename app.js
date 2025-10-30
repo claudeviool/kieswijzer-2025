@@ -230,6 +230,15 @@ function findBestCoalitions() {
     // Calculate all possible majority coalitions
     const coalitions = generateMajorityCoalitions(requiredParty);
     
+    // Debug: Log coalition size distribution
+    const sizeCount = {};
+    coalitions.forEach(c => {
+        const size = c.length;
+        sizeCount[size] = (sizeCount[size] || 0) + 1;
+    });
+    console.log('Coalition size distribution:', sizeCount);
+    console.log('Total coalitions generated:', coalitions.length);
+    
     // Score each coalition by agreement
     const scoredCoalitions = coalitions.map(coalition => {
         const score = calculateCoalitionAgreement(coalition);
@@ -238,6 +247,13 @@ function findBestCoalitions() {
     
     // Sort by agreement score (higher is better)
     scoredCoalitions.sort((a, b) => b.score.agreementRate - a.score.agreementRate);
+    
+    // Debug: Log top 10 by size
+    console.log('\nTop 10 coalitions:');
+    scoredCoalitions.slice(0, 10).forEach((item, i) => {
+        const parties = item.coalition.map(p => p.name).join(' + ');
+        console.log(`${i+1}. [${item.coalition.length} parties] ${item.score.agreementRate}% - ${parties}`);
+    });
     
     // Show top 5 results
     displayCoalitionSuggestions(scoredCoalitions.slice(0, 5));
@@ -332,8 +348,8 @@ function calculateCoalitionAgreement(coalition) {
     const averageAgreement = totalAgreementScore / totalStatements;
     
     // Apply size penalty: prefer smaller coalitions with equal agreement
-    // Penalty: 5% per party beyond 2 parties (so 3 parties = -5%, 4 parties = -10%, etc.)
-    const sizePenalty = Math.max(0, (coalition.length - 2) * 0.05);
+    // Penalty: 10% per party beyond 2 parties (so 3 parties = -10%, 4 parties = -20%, etc.)
+    const sizePenalty = Math.max(0, (coalition.length - 2) * 0.10);
     const adjustedAgreement = Math.max(0, averageAgreement - sizePenalty);
     
     const agreementRate = adjustedAgreement * 100;
@@ -392,7 +408,7 @@ function displayCoalitionSuggestions(scoredCoalitions) {
                 </div>
             </div>
             <div class="suggestion-details">
-                Eensgezindheid: ${Math.round(score.averageAgreement * 100)}% (${score.coalitionSize} partijen, -${(score.coalitionSize - 2) * 5}% grootte-penalty = ${score.agreementRate}%)
+                Eensgezindheid: ${Math.round(score.averageAgreement * 100)}% (${score.coalitionSize} partijen, -${(score.coalitionSize - 2) * 10}% grootte-penalty = ${score.agreementRate}%)
             </div>
         `;
         
