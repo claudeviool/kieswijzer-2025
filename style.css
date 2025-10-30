@@ -249,6 +249,103 @@ header p {
     font-weight: 600;
 }
 
+/* Agreement Overview */
+.agreement-overview {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.agreement-overview h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.agreement-bar-container {
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.agreement-bar {
+    height: 100%;
+    display: flex;
+}
+
+.agreement-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+    cursor: help;
+}
+
+.agreement-segment:hover {
+    filter: brightness(1.1);
+}
+
+.agreement-unified {
+    background: #28a745;
+}
+
+.agreement-moderate {
+    background: #ffc107;
+    color: #333;
+}
+
+.agreement-divided {
+    background: #dc3545;
+}
+
+.agreement-legend {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-unified {
+    background: #28a745;
+}
+
+.legend-moderate {
+    background: #ffc107;
+}
+
+.legend-divided {
+    background: #dc3545;
+}
+
+.legend-label {
+    color: #495057;
+}
+
+.legend-count {
+    font-weight: 600;
+    color: #333;
+}
+
 /* Coalition Finder */
 .coalition-finder {
     margin: 20px 0;

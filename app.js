@@ -393,6 +393,7 @@ function updateUI() {
     renderCoalitionParties();
     renderParties();
     updateCoalitionBar();
+    updateAgreementOverview();
     updateStatementBars();
 }
 
@@ -436,6 +437,94 @@ function calculateCoalitionSeats() {
         }
     });
     return total;
+}
+
+function updateAgreementOverview() {
+    const overview = document.getElementById('agreementOverview');
+    const bar = document.getElementById('agreementBar');
+    const legend = document.getElementById('agreementLegend');
+    
+    if (coalitionParties.size === 0) {
+        overview.style.display = 'none';
+        return;
+    }
+    
+    const coalitionPartiesList = parties.filter(p => coalitionParties.has(p.name));
+    if (coalitionPartiesList.length === 0) {
+        overview.style.display = 'none';
+        return;
+    }
+    
+    // Count statements by agreement level
+    let unified = 0;      // ≥80% agree (🤝)
+    let moderate = 0;     // 60-80% agree (😐)
+    let divided = 0;      // <60% agree (⚡)
+    
+    statements.forEach(statement => {
+        // Count seats by stance
+        let agreeSeats = 0, neutralSeats = 0, disagreeSeats = 0;
+        coalitionPartiesList.forEach(party => {
+            const stance = statement.positions[party.name];
+            if (stance === 1) agreeSeats += party.seats;
+            else if (stance === 0) neutralSeats += party.seats;
+            else if (stance === -1) disagreeSeats += party.seats;
+        });
+        
+        const totalSeats = agreeSeats + neutralSeats + disagreeSeats;
+        if (totalSeats === 0) return;
+        
+        const maxSeats = Math.max(agreeSeats, neutralSeats, disagreeSeats);
+        const agreementRate = (maxSeats / totalSeats) * 100;
+        
+        if (agreementRate >= 80) unified++;
+        else if (agreementRate >= 60) moderate++;
+        else divided++;
+    });
+    
+    const total = unified + moderate + divided;
+    if (total === 0) {
+        overview.style.display = 'none';
+        return;
+    }
+    
+    // Calculate percentages
+    const unifiedPercent = (unified / total) * 100;
+    const moderatePercent = (moderate / total) * 100;
+    const dividedPercent = (divided / total) * 100;
+    
+    // Update bar
+    bar.innerHTML = `
+        ${unified > 0 ? `<div class="agreement-segment agreement-unified" style="width: ${unifiedPercent}%" title="${unified} stellingen: Hoge eensgezindheid (≥80%)">
+            ${unified > 0 ? `🤝 ${unified}` : ''}
+        </div>` : ''}
+        ${moderate > 0 ? `<div class="agreement-segment agreement-moderate" style="width: ${moderatePercent}%" title="${moderate} stellingen: Gemiddelde eensgezindheid (60-80%)">
+            ${moderate > 0 ? `😐 ${moderate}` : ''}
+        </div>` : ''}
+        ${divided > 0 ? `<div class="agreement-segment agreement-divided" style="width: ${dividedPercent}%" title="${divided} stellingen: Verdeeld (<60%)">
+            ${divided > 0 ? `⚡ ${divided}` : ''}
+        </div>` : ''}
+    `;
+    
+    // Update legend
+    legend.innerHTML = `
+        <div class="legend-item">
+            <div class="legend-color legend-unified"></div>
+            <span class="legend-label">🤝 Eensgezind:</span>
+            <span class="legend-count">${unified} stellingen</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-moderate"></div>
+            <span class="legend-label">😐 Gemiddeld:</span>
+            <span class="legend-count">${moderate} stellingen</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-divided"></div>
+            <span class="legend-label">⚡ Verdeeld:</span>
+            <span class="legend-count">${divided} stellingen</span>
+        </div>
+    `;
+    
+    overview.style.display = 'block';
 }
 
 // Render statements
