@@ -31,6 +31,7 @@ function initializeApp() {
     renderParties();
     renderStatements();
     updateCoalitionBar();
+    populateRequiredPartyDropdown();
     setupEventListeners();
 }
 
@@ -149,14 +150,32 @@ function populateInfoModal() {
     container.innerHTML = html;
 }
 
+function populateRequiredPartyDropdown() {
+    const select = document.getElementById('requiredParty');
+    
+    // Clear existing options except the first one
+    select.innerHTML = '<option value="">Geen voorkeur</option>';
+    
+    // Add all parties as options
+    parties.forEach(party => {
+        const option = document.createElement('option');
+        option.value = party.name;
+        option.textContent = `${party.name} (${party.seats} zetels)`;
+        select.appendChild(option);
+    });
+}
+
 // Find the most harmonious coalitions
 function findBestCoalitions() {
     const btn = document.getElementById('findCoalition');
     btn.textContent = '🔍 Berekenen...';
     btn.disabled = true;
     
+    // Get required party if selected
+    const requiredParty = document.getElementById('requiredParty').value;
+    
     // Calculate all possible majority coalitions
-    const coalitions = generateMajorityCoalitions();
+    const coalitions = generateMajorityCoalitions(requiredParty);
     
     // Score each coalition by agreement
     const scoredCoalitions = coalitions.map(coalition => {
@@ -174,17 +193,32 @@ function findBestCoalitions() {
     btn.disabled = false;
 }
 
-function generateMajorityCoalitions() {
+function generateMajorityCoalitions(requiredPartyName = null) {
     const coalitions = [];
-    const n = parties.length;
+    let availableParties = parties;
+    let requiredParty = null;
+    
+    // If a required party is specified, separate it from available parties
+    if (requiredPartyName) {
+        requiredParty = parties.find(p => p.name === requiredPartyName);
+        if (!requiredParty) {
+            return coalitions; // Party not found
+        }
+        availableParties = parties.filter(p => p.name !== requiredPartyName);
+    }
+    
+    const n = availableParties.length;
     
     // Generate all possible combinations (up to 5 parties for performance)
-    for (let size = 2; size <= Math.min(5, n); size++) {
-        const combinations = getCombinations(parties, size);
+    for (let size = 1; size <= Math.min(4, n); size++) {
+        const combinations = getCombinations(availableParties, size);
         for (const combo of combinations) {
-            const seats = combo.reduce((sum, p) => sum + p.seats, 0);
+            // Add required party if specified
+            const fullCombo = requiredParty ? [requiredParty, ...combo] : combo;
+            
+            const seats = fullCombo.reduce((sum, p) => sum + p.seats, 0);
             if (seats >= 76) {
-                coalitions.push(combo);
+                coalitions.push(fullCombo);
             }
         }
     }
@@ -255,8 +289,13 @@ function displayCoalitionSuggestions(scoredCoalitions) {
         return;
     }
     
+    const requiredParty = document.getElementById('requiredParty').value;
+    const headerText = requiredParty
+        ? `🏆 Top ${scoredCoalitions.length} Meest Harmonieuze Coalitions met ${requiredParty}`
+        : `🏆 Top ${scoredCoalitions.length} Meest Harmonieuze Coalitions`;
+    
     container.innerHTML = `
-        <h3>🏆 Top ${scoredCoalitions.length} Meest Harmonieuze Coalitions</h3>
+        <h3>${headerText}</h3>
         <p style="color: #6c757d; font-size: 0.9em; margin-bottom: 15px;">
             Gebaseerd op eensgezindheid: stellingen waar ≥80% van de zetels het eens is
         </p>

@@ -69,9 +69,17 @@
             </div>
 
             <div class="coalition-finder">
-                <button id="findCoalition" class="find-coalition-btn">
-                    🔍 Vind Meest Harmonieuze Coalitie
-                </button>
+                <div class="finder-controls">
+                    <button id="findCoalition" class="find-coalition-btn">
+                        🔍 Vind Meest Harmonieuze Coalitie
+                    </button>
+                    <div class="required-party-selector">
+                        <label for="requiredParty">Met verplichte partij:</label>
+                        <select id="requiredParty">
+                            <option value="">Geen voorkeur</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="coalitionSuggestions" class="coalition-suggestions"></div>
             </div>
 

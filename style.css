@@ -252,10 +252,17 @@ header p {
 /* Coalition Finder */
 .coalition-finder {
     margin: 20px 0;
-    text-align: center;
+}
+
+.finder-controls {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    margin-bottom: 15px;
 }
 
 .find-coalition-btn {
+    flex: 1;
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     color: white;
     border: none;
@@ -275,6 +282,45 @@ header p {
 
 .find-coalition-btn:active {
     transform: translateY(0);
+}
+
+.find-coalition-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.required-party-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 220px;
+}
+
+.required-party-selector label {
+    font-size: 0.9em;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.required-party-selector select {
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1em;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.required-party-selector select:hover {
+    border-color: #667eea;
+}
+
+.required-party-selector select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .coalition-suggestions {
@@ -611,5 +657,14 @@ header p {
     .bar-labels {
         flex-direction: column;
         gap: 5px;
+    }
+    
+    .finder-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .required-party-selector {
+        width: 100%;
     }
 }
