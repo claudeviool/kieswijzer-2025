@@ -651,50 +651,50 @@ function updateStatementIndicator(statement) {
     const maxSeats = Math.max(agreeSeats, neutralSeats, disagreeSeats);
     const agreementRate = (maxSeats / totalSeats) * 100;
     
-    // Determine majority position and color
+    // Determine majority position
     let majorityStance = '';
     let borderColor = '';
     let shadowColor = '';
+    let showBorder = false;
     
     if (maxSeats === agreeSeats) {
         majorityStance = 'eens';
         borderColor = '#28a745';  // Green for agree
         shadowColor = 'rgba(40, 167, 69, 0.15)';
+        showBorder = agreementRate >= 60;  // Only show if ≥60% agree
     } else if (maxSeats === disagreeSeats) {
         majorityStance = 'oneens';
         borderColor = '#dc3545';  // Red for disagree
         shadowColor = 'rgba(220, 53, 69, 0.15)';
+        showBorder = agreementRate >= 60;  // Only show if ≥60% disagree
     } else {
         majorityStance = 'neutraal';
-        borderColor = '#6c757d';  // Gray for neutral
-        shadowColor = 'rgba(108, 117, 125, 0.15)';
+        showBorder = false;  // Never highlight neutral
     }
     
-    // Set emoji based on unity level, but color based on position
+    // Set emoji based on unity level
     if (agreementRate >= 80) {
         indicator.textContent = '🤝';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Hoge eensgezindheid`;
         indicator.style.fontSize = '1.5em';
-        if (statementItem) {
-            statementItem.style.borderLeft = `4px solid ${borderColor}`;
-            statementItem.style.boxShadow = `0 2px 8px ${shadowColor}`;
-        }
     } else if (agreementRate >= 60) {
         indicator.textContent = '😐';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Gemiddelde eensgezindheid`;
         indicator.style.fontSize = '1.5em';
-        if (statementItem) {
-            statementItem.style.borderLeft = `4px solid ${borderColor}`;
-            statementItem.style.boxShadow = `0 2px 8px ${shadowColor}`;
-        }
     } else {
         indicator.textContent = '⚡';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Verdeeld (${agreeSeats} eens, ${neutralSeats} neutraal, ${disagreeSeats} oneens)`;
         indicator.style.fontSize = '1.5em';
-        if (statementItem) {
-            // For divided statements, use yellow/orange to indicate conflict
-            statementItem.style.borderLeft = '4px solid #ffc107';
-            statementItem.style.boxShadow = '0 2px 8px rgba(255, 193, 7, 0.15)';
+    }
+    
+    // Apply border only for clear stances (agree/disagree with ≥60% unity)
+    if (statementItem) {
+        if (showBorder) {
+            statementItem.style.borderLeft = `4px solid ${borderColor}`;
+            statementItem.style.boxShadow = `0 2px 8px ${shadowColor}`;
+        } else {
+            statementItem.style.borderLeft = '';
+            statementItem.style.boxShadow = '';
         }
     }
 }
@@ -854,13 +854,30 @@ function updateConsistencyBar(statement) {
         label = 'Verdeeld';
     }
     
+    // Determine badge color based on majority position
+    let badgeColor = color;
+    let badgeText = '';
+    if (maxSeats === agreeSeats) {
+        badgeColor = '#28a745';
+        badgeText = 'Meerderheid Eens';
+    } else if (maxSeats === disagreeSeats) {
+        badgeColor = '#dc3545';
+        badgeText = 'Meerderheid Oneens';
+    } else {
+        badgeColor = '#6c757d';
+        badgeText = 'Meerderheid Neutraal';
+    }
+    
     bar.innerHTML = `
         <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: ${color}15; border-left: 4px solid ${color}; border-radius: 4px; margin-bottom: 10px;">
             <span style="font-size: 1.5em;">${emoji}</span>
             <div style="flex: 1;">
-                <strong>${label}</strong>: ${Math.round(agreementRate)}% van coalitie is ${majorityStance}
-                <div style="font-size: 0.85em; color: #6c757d; margin-top: 2px;">
-                    ${agreeSeats} eens · ${neutralSeats} neutraal · ${disagreeSeats} oneens
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <strong>${label}</strong>
+                    <span style="background: ${badgeColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75em; font-weight: 600;">${badgeText}</span>
+                </div>
+                <div style="font-size: 0.85em; color: #495057;">
+                    ${Math.round(agreementRate)}% van coalitie: ${agreeSeats} eens · ${neutralSeats} neutraal · ${disagreeSeats} oneens
                 </div>
             </div>
         </div>
