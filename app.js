@@ -5,6 +5,23 @@ let coalitionParties = new Set();
 let statementsMetadata = null;
 let seatsMetadata = null;
 
+// Party name mapping: NOS API → Statements data
+const PARTY_NAME_MAP = {
+    'GLPVDA': 'GroenLinks-PvdA',
+    'CU': 'ChristenUnie',
+    'FVD': 'FvD',
+    'PVDD': 'Partij voor de Dieren',
+    'LP': 'Libertaire Partij',
+    'DELINIE': 'De Linie',
+    'VREVDIER': 'Vrede voor Dieren',
+    'VRIJVER': 'Vrij Verbond',
+    'PIRATEN': 'Piratenpartij',
+    'NLPLAN': 'NL PLAN',
+    'PVDR': 'Partij voor de Rechtsstaat',
+    'ELLECT': 'ELLECT',
+    'OVERIG': 'Overige'
+};
+
 // Load data
 async function loadData() {
     try {
@@ -12,15 +29,20 @@ async function loadData() {
         const nosResponse = await fetch('https://voteflow.api.nos.nl/TK25/index.json');
         const nosData = await nosResponse.json();
         
-        // Extract parties with seats from NOS data
+        // Extract parties with seats from NOS data and map names
         const nosParties = nosData.landelijke_uitslag.partijen
             .filter(p => p.huidig.zetels > 0)
-            .map(p => ({
-                party: p.partij.short_name,
-                name: p.partij.short_name,
-                seats: p.huidig.zetels,
-                votes: p.huidig.stemmen
-            }))
+            .map(p => {
+                const nosName = p.partij.short_name;
+                const mappedName = PARTY_NAME_MAP[nosName] || nosName;
+                return {
+                    party: mappedName,
+                    name: mappedName,
+                    seats: p.huidig.zetels,
+                    votes: p.huidig.stemmen,
+                    nosName: nosName  // Keep original for reference
+                };
+            })
             .sort((a, b) => b.seats - a.seats || b.votes - a.votes);
         
         parties = nosParties;
