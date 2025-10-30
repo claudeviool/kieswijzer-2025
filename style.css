@@ -119,6 +119,103 @@ header p {
     font-weight: 600;
 }
 
+/* Coalition Finder */
+.coalition-finder {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.find-coalition-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    transition: all 0.3s;
+}
+
+.find-coalition-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+.find-coalition-btn:active {
+    transform: translateY(0);
+}
+
+.coalition-suggestions {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.coalition-suggestions.visible {
+    display: block;
+}
+
+.suggestion-item {
+    padding: 15px;
+    margin: 10px 0;
+    background: #f8f9fa;
+    border-left: 4px solid #28a745;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.suggestion-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.suggestion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.suggestion-parties {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.05em;
+}
+
+.suggestion-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9em;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stat-seats {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.stat-agreement {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.suggestion-details {
+    font-size: 0.85em;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
 /* Party Pools */
 .party-pools {
     display: grid;

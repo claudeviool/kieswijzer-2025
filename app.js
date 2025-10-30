@@ -95,6 +95,166 @@ function setupEventListeners() {
             item.classList.remove('expanded');
         });
     });
+    
+    // Coalition finder
+    document.getElementById('findCoalition').addEventListener('click', findBestCoalitions);
+}
+
+// Find the most harmonious coalitions
+function findBestCoalitions() {
+    const btn = document.getElementById('findCoalition');
+    btn.textContent = '🔍 Berekenen...';
+    btn.disabled = true;
+    
+    // Calculate all possible majority coalitions
+    const coalitions = generateMajorityCoalitions();
+    
+    // Score each coalition by agreement
+    const scoredCoalitions = coalitions.map(coalition => {
+        const score = calculateCoalitionAgreement(coalition);
+        return { coalition, score };
+    });
+    
+    // Sort by agreement score (higher is better)
+    scoredCoalitions.sort((a, b) => b.score.agreementRate - a.score.agreementRate);
+    
+    // Show top 5 results
+    displayCoalitionSuggestions(scoredCoalitions.slice(0, 5));
+    
+    btn.textContent = '🔍 Vind Meest Harmonieuze Coalitie';
+    btn.disabled = false;
+}
+
+function generateMajorityCoalitions() {
+    const coalitions = [];
+    const n = parties.length;
+    
+    // Generate all possible combinations (up to 5 parties for performance)
+    for (let size = 2; size <= Math.min(5, n); size++) {
+        const combinations = getCombinations(parties, size);
+        for (const combo of combinations) {
+            const seats = combo.reduce((sum, p) => sum + p.seats, 0);
+            if (seats >= 76) {
+                coalitions.push(combo);
+            }
+        }
+    }
+    
+    return coalitions;
+}
+
+function getCombinations(arr, size) {
+    if (size === 1) return arr.map(item => [item]);
+    
+    const combinations = [];
+    for (let i = 0; i <= arr.length - size; i++) {
+        const head = arr[i];
+        const tailCombos = getCombinations(arr.slice(i + 1), size - 1);
+        for (const tail of tailCombos) {
+            combinations.push([head, ...tail]);
+        }
+    }
+    return combinations;
+}
+
+function calculateCoalitionAgreement(coalition) {
+    let totalAgreements = 0;
+    let totalComparisons = 0;
+    
+    // For each statement, check if coalition parties agree
+    statements.forEach(statement => {
+        const stances = coalition.map(party => statement.positions[party.name]);
+        
+        // Count pairwise agreements
+        for (let i = 0; i < stances.length; i++) {
+            for (let j = i + 1; j < stances.length; j++) {
+                totalComparisons++;
+                if (stances[i] === stances[j]) {
+                    totalAgreements++;
+                }
+            }
+        }
+    });
+    
+    const agreementRate = totalComparisons > 0 ? (totalAgreements / totalComparisons) * 100 : 0;
+    const seats = coalition.reduce((sum, p) => sum + p.seats, 0);
+    
+    return {
+        agreementRate: Math.round(agreementRate * 10) / 10,
+        totalAgreements,
+        totalComparisons,
+        seats
+    };
+}
+
+function displayCoalitionSuggestions(scoredCoalitions) {
+    const container = document.getElementById('coalitionSuggestions');
+    
+    if (scoredCoalitions.length === 0) {
+        container.innerHTML = '<p>Geen meerderheidscoalities gevonden.</p>';
+        container.classList.add('visible');
+        return;
+    }
+    
+    container.innerHTML = `
+        <h3>🏆 Top ${scoredCoalitions.length} Meest Harmonieuze Coalitions</h3>
+        <p style="color: #6c757d; font-size: 0.9em; margin-bottom: 15px;">
+            Gebaseerd op onderlinge overeenstemming over alle 30 stellingen
+        </p>
+    `;
+    
+    scoredCoalitions.forEach((item, index) => {
+        const { coalition, score } = item;
+        const partyNames = coalition.map(p => p.name).join(' + ');
+        
+        const suggestionDiv = document.createElement('div');
+        suggestionDiv.className = 'suggestion-item';
+        suggestionDiv.innerHTML = `
+            <div class="suggestion-header">
+                <div class="suggestion-parties">
+                    ${index + 1}. ${partyNames}
+                </div>
+                <div class="suggestion-stats">
+                    <div class="stat-item">
+                        <span>💺</span>
+                        <span class="stat-seats">${score.seats} zetels</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>🤝</span>
+                        <span class="stat-agreement">${score.agreementRate}% eens</span>
+                    </div>
+                </div>
+            </div>
+            <div class="suggestion-details">
+                ${score.totalAgreements} van ${score.totalComparisons} paarsgewijze vergelijkingen komen overeen
+            </div>
+        `;
+        
+        // Click to apply coalition
+        suggestionDiv.addEventListener('click', () => {
+            applyCoalition(coalition);
+            container.classList.remove('visible');
+        });
+        
+        container.appendChild(suggestionDiv);
+    });
+    
+    container.classList.add('visible');
+}
+
+function applyCoalition(coalition) {
+    // Clear current coalition
+    coalitionParties.clear();
+    
+    // Add suggested parties
+    coalition.forEach(party => {
+        coalitionParties.add(party.name);
+    });
+    
+    updateUI();
+    
+    // Scroll to top to see the result
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function handleDragOver(e) {
