@@ -241,10 +241,10 @@ function getCombinations(arr, size) {
 }
 
 function calculateCoalitionAgreement(coalition) {
-    let unifiedStatements = 0;  // Statements where ≥80% of seats agree
+    let totalAgreementScore = 0;
     let totalStatements = statements.length;
     
-    // For each statement, check coalition unity
+    // For each statement, calculate agreement score (0-1 scale)
     statements.forEach(statement => {
         const stances = coalition.map(party => ({
             party: party.name,
@@ -261,20 +261,25 @@ function calculateCoalitionAgreement(coalition) {
         });
         
         const totalSeats = agreeSeats + neutralSeats + disagreeSeats;
-        const maxSeats = Math.max(agreeSeats, neutralSeats, disagreeSeats);
+        if (totalSeats === 0) return;
         
-        // Statement is "unified" if ≥80% of seats agree on the majority position
-        if (maxSeats / totalSeats >= 0.8) {
-            unifiedStatements++;
-        }
+        const maxSeats = Math.max(agreeSeats, neutralSeats, disagreeSeats);
+        const majorityFraction = maxSeats / totalSeats;
+        
+        // Calculate agreement score: 0 at 50% (completely divided), 1 at 100% (unanimous)
+        // Formula: (majorityFraction - 0.5) / 0.5
+        // This maps: 50% -> 0, 75% -> 0.5, 100% -> 1
+        const agreementScore = Math.max(0, (majorityFraction - 0.5) / 0.5);
+        totalAgreementScore += agreementScore;
     });
     
     const seats = coalition.reduce((sum, p) => sum + p.seats, 0);
-    const agreementRate = (unifiedStatements / totalStatements) * 100;
+    const averageAgreement = totalAgreementScore / totalStatements;
+    const agreementRate = averageAgreement * 100;
     
     return {
         agreementRate: Math.round(agreementRate * 10) / 10,
-        unifiedStatements,
+        averageAgreement: Math.round(averageAgreement * 1000) / 1000,
         totalStatements,
         seats
     };
@@ -297,7 +302,7 @@ function displayCoalitionSuggestions(scoredCoalitions) {
     container.innerHTML = `
         <h3>${headerText}</h3>
         <p style="color: #6c757d; font-size: 0.9em; margin-bottom: 15px;">
-            Gebaseerd op eensgezindheid: stellingen waar ≥80% van de zetels het eens is
+            Eensgezindheid: 0% = 50-50 verdeeld, 100% = volledig eens over alle stellingen
         </p>
     `;
     
@@ -324,7 +329,7 @@ function displayCoalitionSuggestions(scoredCoalitions) {
                 </div>
             </div>
             <div class="suggestion-details">
-                ${score.unifiedStatements} van ${score.totalStatements} stellingen zijn eensgezind (≥80% zetels eens)
+                Gemiddelde eensgezindheid: ${Math.round(score.averageAgreement * 100)}% (0% = 50-50 verdeeld, 100% = volledig eens)
             </div>
         `;
         
