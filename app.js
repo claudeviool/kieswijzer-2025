@@ -207,31 +207,41 @@ function getCombinations(arr, size) {
 }
 
 function calculateCoalitionAgreement(coalition) {
-    let totalAgreements = 0;
-    let totalComparisons = 0;
+    let unifiedStatements = 0;  // Statements where ≥80% of seats agree
+    let totalStatements = statements.length;
     
-    // For each statement, check if coalition parties agree
+    // For each statement, check coalition unity
     statements.forEach(statement => {
-        const stances = coalition.map(party => statement.positions[party.name]);
+        const stances = coalition.map(party => ({
+            party: party.name,
+            stance: statement.positions[party.name],
+            seats: party.seats
+        }));
         
-        // Count pairwise agreements
-        for (let i = 0; i < stances.length; i++) {
-            for (let j = i + 1; j < stances.length; j++) {
-                totalComparisons++;
-                if (stances[i] === stances[j]) {
-                    totalAgreements++;
-                }
-            }
+        // Count seats by stance
+        let agreeSeats = 0, neutralSeats = 0, disagreeSeats = 0;
+        stances.forEach(s => {
+            if (s.stance === 1) agreeSeats += s.seats;
+            else if (s.stance === 0) neutralSeats += s.seats;
+            else if (s.stance === -1) disagreeSeats += s.seats;
+        });
+        
+        const totalSeats = agreeSeats + neutralSeats + disagreeSeats;
+        const maxSeats = Math.max(agreeSeats, neutralSeats, disagreeSeats);
+        
+        // Statement is "unified" if ≥80% of seats agree on the majority position
+        if (maxSeats / totalSeats >= 0.8) {
+            unifiedStatements++;
         }
     });
     
-    const agreementRate = totalComparisons > 0 ? (totalAgreements / totalComparisons) * 100 : 0;
     const seats = coalition.reduce((sum, p) => sum + p.seats, 0);
+    const agreementRate = (unifiedStatements / totalStatements) * 100;
     
     return {
         agreementRate: Math.round(agreementRate * 10) / 10,
-        totalAgreements,
-        totalComparisons,
+        unifiedStatements,
+        totalStatements,
         seats
     };
 }
@@ -248,7 +258,7 @@ function displayCoalitionSuggestions(scoredCoalitions) {
     container.innerHTML = `
         <h3>🏆 Top ${scoredCoalitions.length} Meest Harmonieuze Coalitions</h3>
         <p style="color: #6c757d; font-size: 0.9em; margin-bottom: 15px;">
-            Gebaseerd op onderlinge overeenstemming over alle 30 stellingen
+            Gebaseerd op eensgezindheid: stellingen waar ≥80% van de zetels het eens is
         </p>
     `;
     
@@ -270,12 +280,12 @@ function displayCoalitionSuggestions(scoredCoalitions) {
                     </div>
                     <div class="stat-item">
                         <span>🤝</span>
-                        <span class="stat-agreement">${score.agreementRate}% eens</span>
+                        <span class="stat-agreement">${score.agreementRate}% eensgezind</span>
                     </div>
                 </div>
             </div>
             <div class="suggestion-details">
-                ${score.totalAgreements} van ${score.totalComparisons} paarsgewijze vergelijkingen komen overeen
+                ${score.unifiedStatements} van ${score.totalStatements} stellingen zijn eensgezind (≥80% zetels eens)
             </div>
         `;
         
@@ -415,6 +425,7 @@ function createStatementItem(statement, index) {
             <span class="statement-toggle">▼</span>
         </div>
         <div class="statement-content">
+            <div class="coalition-consistency-bar" id="consistency-bar-${statement.id}"></div>
             <div class="statement-bars">
                 <div class="bar-section">
                     <div class="bar-title">Volledige Tweede Kamer (150 zetels)</div>
@@ -442,6 +453,7 @@ function updateStatementBars() {
         updateFullBar(statement);
         updateCoalitionBar_Statement(statement);
         updateStatementIndicator(statement);
+        updateConsistencyBar(statement);
     });
 }
 
@@ -587,6 +599,78 @@ function updateCoalitionBar_Statement(statement) {
             ${disagreeSeats > 0 ? `<div class="coalition-stance-segment coalition-disagree" style="width: ${disagreePercent}%">
                 Oneens: ${disagreeSeats}
             </div>` : ''}
+        </div>
+    `;
+}
+
+function updateConsistencyBar(statement) {
+    const barId = `consistency-bar-${statement.id}`;
+    const bar = document.getElementById(barId);
+    if (!bar) return;
+    
+    if (coalitionParties.size === 0) {
+        bar.style.display = 'none';
+        return;
+    }
+    
+    // Calculate coalition agreement on this statement
+    const coalitionPartiesList = parties.filter(p => coalitionParties.has(p.name));
+    if (coalitionPartiesList.length === 0) {
+        bar.style.display = 'none';
+        return;
+    }
+    
+    // Count seats by stance
+    let agreeSeats = 0, neutralSeats = 0, disagreeSeats = 0;
+    coalitionPartiesList.forEach(party => {
+        const stance = statement.positions[party.name];
+        if (stance === 1) agreeSeats += party.seats;
+        else if (stance === 0) neutralSeats += party.seats;
+        else if (stance === -1) disagreeSeats += party.seats;
+    });
+    
+    const totalSeats = agreeSeats + neutralSeats + disagreeSeats;
+    if (totalSeats === 0) {
+        bar.style.display = 'none';
+        return;
+    }
+    
+    const maxSeats = Math.max(agreeSeats, neutralSeats, disagreeSeats);
+    const agreementRate = (maxSeats / totalSeats) * 100;
+    
+    // Determine majority position
+    let majorityStance = '';
+    if (maxSeats === agreeSeats) majorityStance = 'eens';
+    else if (maxSeats === disagreeSeats) majorityStance = 'oneens';
+    else majorityStance = 'neutraal';
+    
+    // Show consistency bar
+    bar.style.display = 'block';
+    
+    let emoji, color, label;
+    if (agreementRate >= 80) {
+        emoji = '🤝';
+        color = '#28a745';
+        label = 'Eensgezind';
+    } else if (agreementRate >= 60) {
+        emoji = '😐';
+        color = '#ffc107';
+        label = 'Gemiddeld';
+    } else {
+        emoji = '⚡';
+        color = '#dc3545';
+        label = 'Verdeeld';
+    }
+    
+    bar.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: ${color}15; border-left: 4px solid ${color}; border-radius: 4px; margin-bottom: 10px;">
+            <span style="font-size: 1.5em;">${emoji}</span>
+            <div style="flex: 1;">
+                <strong>${label}</strong>: ${Math.round(agreementRate)}% van coalitie is ${majorityStance}
+                <div style="font-size: 0.85em; color: #6c757d; margin-top: 2px;">
+                    ${agreeSeats} eens · ${neutralSeats} neutraal · ${disagreeSeats} oneens
+                </div>
+            </div>
         </div>
     `;
 }
