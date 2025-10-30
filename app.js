@@ -8,11 +8,37 @@ let seatsMetadata = null;
 // Load data
 async function loadData() {
     try {
-        // Load party seats
-        const seatsResponse = await fetch('party_seats_exitpoll_2025.json');
-        const seatsData = await seatsResponse.json();
-        parties = seatsData.parties.filter(p => p.seats > 0);
-        seatsMetadata = seatsData.metadata;
+        // Load party seats from NOS VoteFlow API
+        const nosResponse = await fetch('https://voteflow.api.nos.nl/TK25/index.json');
+        const nosData = await nosResponse.json();
+        
+        // Extract parties with seats from NOS data
+        const nosParties = nosData.landelijke_uitslag.partijen
+            .filter(p => p.huidig.zetels > 0)
+            .map(p => ({
+                party: p.partij.short_name,
+                name: p.partij.short_name,
+                seats: p.huidig.zetels,
+                votes: p.huidig.stemmen
+            }))
+            .sort((a, b) => b.seats - a.seats || b.votes - a.votes);
+        
+        parties = nosParties;
+        
+        // Create metadata from NOS data
+        const publicationDate = new Date(nosData.landelijke_uitslag.publicatie_datum_tijd);
+        seatsMetadata = {
+            source: 'NOS VoteFlow API (Live)',
+            source_url: 'https://voteflow.api.nos.nl/TK25/index.json',
+            election: 'Tweede Kamer 2025',
+            date: publicationDate.toLocaleDateString('nl-NL'),
+            publication_datetime: nosData.landelijke_uitslag.publicatie_datum_tijd,
+            municipalities_counted: nosData.landelijke_uitslag.aantal_uitslagen,
+            total_municipalities: 342,
+            status: nosData.landelijke_uitslag.aantal_uitslagen === 342 ? 'Eindstand' : 'Tussenstand',
+            turnout_percentage: nosData.landelijke_uitslag.huidige_verkiezing.opkomst_promillage / 10,
+            note: `${nosData.landelijke_uitslag.aantal_uitslagen}/342 gemeenten geteld. Opkomst: ${(nosData.landelijke_uitslag.huidige_verkiezing.opkomst_promillage / 10).toFixed(1)}%`
+        };
         
         // Load statements
         const statementsResponse = await fetch('statements_wide.json');
@@ -23,7 +49,7 @@ async function loadData() {
         initializeApp();
     } catch (error) {
         console.error('Error loading data:', error);
-        alert('Fout bij het laden van data. Zorg dat de JSON bestanden beschikbaar zijn.');
+        alert('Fout bij het laden van data. Controleer de internetverbinding.');
     }
 }
 
@@ -140,10 +166,15 @@ function populateInfoModal() {
     
     // Seats info
     if (seatsMetadata) {
+        const statusBadge = seatsMetadata.status === 'Eindstand'
+            ? '<span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">✓ Officiële Eindstand</span>'
+            : '<span style="background: #ffc107; color: #000; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">⏳ Tussenstand</span>';
+        
         html += `
-            <p><strong>Zetelverdeling:</strong> ${seatsMetadata.source}</p>
-            <p>Exit poll uitgevoerd door ${seatsMetadata.pollster} op ${seatsMetadata.date}.</p>
+            <p><strong>Zetelverdeling:</strong> <a href="${seatsMetadata.source_url}" target="_blank">${seatsMetadata.source}</a> ${statusBadge}</p>
+            <p>${seatsMetadata.election} - ${seatsMetadata.date}</p>
             <p><small>${seatsMetadata.note}</small></p>
+            <p><small>Data wordt live opgehaald van de NOS VoteFlow API</small></p>
         `;
     }
     

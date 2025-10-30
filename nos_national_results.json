@@ -1,0 +1,532 @@
+{
+  "publicatie_datum_tijd": "2025-10-30T10:53:39.391987206+00:00",
+  "aantal_uitslagen": 342,
+  "huidige_verkiezing": {
+    "verkiezing_code": "TK25",
+    "kiesgerechtigden": 13406359,
+    "zetels": null,
+    "opkomst": 10509780,
+    "opkomst_promillage": 784,
+    "ongeldig": 26235,
+    "ongeldig_promillage": 2,
+    "blanco": 40009,
+    "blanco_promillage": 3
+  },
+  "vorige_verkiezing": {
+    "verkiezing_code": "TK23",
+    "kiesgerechtigden": 13329153,
+    "zetels": null,
+    "opkomst": 10379062,
+    "opkomst_promillage": 779,
+    "ongeldig": 22467,
+    "ongeldig_promillage": 2,
+    "blanco": 19527,
+    "blanco_promillage": 1
+  },
+  "partijen": [
+    {
+      "partij": {
+        "name": "BIJ1",
+        "short_name": "BIJ1"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 38122,
+        "stemmen_promillage": 4,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 43779,
+        "stemmen_promillage": 4,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "ChristenUnie",
+        "short_name": "CU"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 199137,
+        "stemmen_promillage": 19,
+        "zetels": 3
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 211357,
+        "stemmen_promillage": 20,
+        "zetels": 3
+      }
+    },
+    {
+      "partij": {
+        "name": "Forum voor Democratie",
+        "short_name": "FVD"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 473792,
+        "stemmen_promillage": 45,
+        "zetels": 7
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 230229,
+        "stemmen_promillage": 22,
+        "zetels": 3
+      }
+    },
+    {
+      "partij": {
+        "name": "DENK",
+        "short_name": "DENK"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 246844,
+        "stemmen_promillage": 24,
+        "zetels": 3
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 246205,
+        "stemmen_promillage": 24,
+        "zetels": 3
+      }
+    },
+    {
+      "partij": {
+        "name": "Partij voor de Dieren",
+        "short_name": "PVDD"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 210414,
+        "stemmen_promillage": 20,
+        "zetels": 3
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 232045,
+        "stemmen_promillage": 22,
+        "zetels": 3
+      }
+    },
+    {
+      "partij": {
+        "name": "CDA",
+        "short_name": "CDA"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 1226590,
+        "stemmen_promillage": 117,
+        "zetels": 18
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 343518,
+        "stemmen_promillage": 33,
+        "zetels": 5
+      }
+    },
+    {
+      "partij": {
+        "name": "Piratenpartij",
+        "short_name": "PIRATEN"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 10553,
+        "stemmen_promillage": 1,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 8763,
+        "stemmen_promillage": 1,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "FNP",
+        "short_name": "FNP"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 9332,
+        "stemmen_promillage": 1,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 0,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "BBB",
+        "short_name": "BBB"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 276832,
+        "stemmen_promillage": 27,
+        "zetels": 4
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 481092,
+        "stemmen_promillage": 47,
+        "zetels": 7
+      }
+    },
+    {
+      "partij": {
+        "name": "Nieuw Sociaal Contract (NSC)",
+        "short_name": "NSC"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 38897,
+        "stemmen_promillage": 4,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 1331193,
+        "stemmen_promillage": 129,
+        "zetels": 20
+      }
+    },
+    {
+      "partij": {
+        "name": "LP (Libertaire Partij)",
+        "short_name": "LP"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 8229,
+        "stemmen_promillage": 1,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 4093,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "JA21",
+        "short_name": "JA21"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 618513,
+        "stemmen_promillage": 59,
+        "zetels": 9
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 70643,
+        "stemmen_promillage": 7,
+        "zetels": 1
+      }
+    },
+    {
+      "partij": {
+        "name": "D66",
+        "short_name": "D66"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 1741597,
+        "stemmen_promillage": 167,
+        "zetels": 26
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 647288,
+        "stemmen_promillage": 63,
+        "zetels": 9
+      }
+    },
+    {
+      "partij": {
+        "name": "VVD",
+        "short_name": "VVD"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 1477496,
+        "stemmen_promillage": 141,
+        "zetels": 22
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 1573241,
+        "stemmen_promillage": 152,
+        "zetels": 24
+      }
+    },
+    {
+      "partij": {
+        "name": "PVV (Partij voor de Vrijheid)",
+        "short_name": "PVV"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 1743581,
+        "stemmen_promillage": 167,
+        "zetels": 26
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 2439220,
+        "stemmen_promillage": 236,
+        "zetels": 37
+      }
+    },
+    {
+      "partij": {
+        "name": "Overige 2023",
+        "short_name": "OVERIG"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 0,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 27945,
+        "stemmen_promillage": 3,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "50PLUS",
+        "short_name": "50PLUS"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 149573,
+        "stemmen_promillage": 14,
+        "zetels": 2
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 50632,
+        "stemmen_promillage": 5,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "Staatkundig Gereformeerde Partij (SGP)",
+        "short_name": "SGP"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 237416,
+        "stemmen_promillage": 23,
+        "zetels": 3
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 216757,
+        "stemmen_promillage": 21,
+        "zetels": 3
+      }
+    },
+    {
+      "partij": {
+        "name": "Belang Van Nederland (BVNL)",
+        "short_name": "BVNL"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 18082,
+        "stemmen_promillage": 2,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 52293,
+        "stemmen_promillage": 5,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "Vrede voor Dieren",
+        "short_name": "VREVDIER"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 16725,
+        "stemmen_promillage": 2,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 0,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "Volt",
+        "short_name": "VOLT"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 110452,
+        "stemmen_promillage": 11,
+        "zetels": 1
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 174946,
+        "stemmen_promillage": 17,
+        "zetels": 2
+      }
+    },
+    {
+      "partij": {
+        "name": "GROENLINKS / Partij van de Arbeid (PvdA)",
+        "short_name": "GLPVDA"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 1300648,
+        "stemmen_promillage": 125,
+        "zetels": 20
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 1620276,
+        "stemmen_promillage": 157,
+        "zetels": 25
+      }
+    },
+    {
+      "partij": {
+        "name": "SP (Socialistische Partij)",
+        "short_name": "SP"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 195298,
+        "stemmen_promillage": 19,
+        "zetels": 3
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 325855,
+        "stemmen_promillage": 32,
+        "zetels": 5
+      }
+    },
+    {
+      "partij": {
+        "name": "Vrij Verbond",
+        "short_name": "VRIJVER"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 1077,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 0,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "DE LINIE",
+        "short_name": "DELINIE"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 3532,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 0,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "ELLECT",
+        "short_name": "ELLECT"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 224,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 0,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "NL PLAN",
+        "short_name": "NLPLAN"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 2318,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 3344,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      }
+    },
+    {
+      "partij": {
+        "name": "Partij voor de Rechtsstaat",
+        "short_name": "PVDR"
+      },
+      "huidig": {
+        "verkiezing_code": "TK25",
+        "stemmen": 141,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      },
+      "vorig": {
+        "verkiezing_code": "TK23",
+        "stemmen": 0,
+        "stemmen_promillage": 0,
+        "zetels": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>CORS Test</title></head>
+<body>
+<script>
+fetch('https://voteflow.api.nos.nl/TK25/index.json')
+  .then(r => r.json())
+  .then(d => console.log('SUCCESS:', d.landelijke_uitslag.partijen.length, 'parties'))
+  .catch(e => console.error('CORS ERROR:', e));
+</script>
+<p>Check browser console for results</p>
+</body>
+</html>
