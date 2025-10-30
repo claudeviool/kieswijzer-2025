@@ -704,17 +704,23 @@ function updateCoalitionBar_Statement(statement) {
         return;
     }
     
-    // Calculate coalition stances
-    let agreeSeats = 0;
-    let neutralSeats = 0;
-    let disagreeSeats = 0;
+    // Calculate coalition stances and collect party names
+    let agreeSeats = 0, neutralSeats = 0, disagreeSeats = 0;
+    let agreeParties = [], neutralParties = [], disagreeParties = [];
     
     parties.forEach(party => {
         if (coalitionParties.has(party.name)) {
             const stance = statement.positions[party.name];
-            if (stance === 1) agreeSeats += party.seats;
-            else if (stance === 0) neutralSeats += party.seats;
-            else if (stance === -1) disagreeSeats += party.seats;
+            if (stance === 1) {
+                agreeSeats += party.seats;
+                agreeParties.push(`${party.name} (${party.seats})`);
+            } else if (stance === 0) {
+                neutralSeats += party.seats;
+                neutralParties.push(`${party.name} (${party.seats})`);
+            } else if (stance === -1) {
+                disagreeSeats += party.seats;
+                disagreeParties.push(`${party.name} (${party.seats})`);
+            }
         }
     });
     
@@ -729,15 +735,20 @@ function updateCoalitionBar_Statement(statement) {
     const neutralPercent = (neutralSeats / total) * 100;
     const disagreePercent = (disagreeSeats / total) * 100;
     
+    // Create tooltips
+    const agreeTooltip = agreeParties.length > 0 ? `Eens (${agreeSeats} zetels):\n${agreeParties.join('\n')}` : '';
+    const neutralTooltip = neutralParties.length > 0 ? `Neutraal (${neutralSeats} zetels):\n${neutralParties.join('\n')}` : '';
+    const disagreeTooltip = disagreeParties.length > 0 ? `Oneens (${disagreeSeats} zetels):\n${disagreeParties.join('\n')}` : '';
+    
     bar.innerHTML = `
         <div class="stance-bar">
-            ${agreeSeats > 0 ? `<div class="coalition-stance-segment coalition-agree" style="width: ${agreePercent}%">
+            ${agreeSeats > 0 ? `<div class="coalition-stance-segment coalition-agree" style="width: ${agreePercent}%" title="${agreeTooltip}">
                 Eens: ${agreeSeats}
             </div>` : ''}
-            ${neutralSeats > 0 ? `<div class="coalition-stance-segment coalition-neutral" style="width: ${neutralPercent}%">
+            ${neutralSeats > 0 ? `<div class="coalition-stance-segment coalition-neutral" style="width: ${neutralPercent}%" title="${neutralTooltip}">
                 Neutraal: ${neutralSeats}
             </div>` : ''}
-            ${disagreeSeats > 0 ? `<div class="coalition-stance-segment coalition-disagree" style="width: ${disagreePercent}%">
+            ${disagreeSeats > 0 ? `<div class="coalition-stance-segment coalition-disagree" style="width: ${disagreePercent}%" title="${disagreeTooltip}">
                 Oneens: ${disagreeSeats}
             </div>` : ''}
         </div>
