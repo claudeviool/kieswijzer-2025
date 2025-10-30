@@ -406,42 +406,53 @@ function updateStatementIndicator(statement) {
         return;
     }
     
-    // Calculate coalition agreement on this statement
+    // Calculate coalition agreement on this statement based on seats
     const coalitionPartiesList = parties.filter(p => coalitionParties.has(p.name));
-    if (coalitionPartiesList.length < 2) {
+    if (coalitionPartiesList.length === 0) {
         indicator.textContent = '';
         return;
     }
     
-    // Get stances for coalition parties
-    const stances = coalitionPartiesList.map(p => statement.positions[p.name]);
+    // Count seats by stance
+    let agreeSeats = 0;
+    let neutralSeats = 0;
+    let disagreeSeats = 0;
     
-    // Count agreements
-    let agreements = 0;
-    let total = 0;
-    for (let i = 0; i < stances.length; i++) {
-        for (let j = i + 1; j < stances.length; j++) {
-            total++;
-            if (stances[i] === stances[j]) {
-                agreements++;
-            }
-        }
+    coalitionPartiesList.forEach(party => {
+        const stance = statement.positions[party.name];
+        if (stance === 1) agreeSeats += party.seats;
+        else if (stance === 0) neutralSeats += party.seats;
+        else if (stance === -1) disagreeSeats += party.seats;
+    });
+    
+    const totalSeats = agreeSeats + neutralSeats + disagreeSeats;
+    if (totalSeats === 0) {
+        indicator.textContent = '';
+        return;
     }
     
-    const agreementRate = total > 0 ? (agreements / total) * 100 : 0;
+    // Calculate what percentage agrees with the majority position
+    const maxSeats = Math.max(agreeSeats, neutralSeats, disagreeSeats);
+    const agreementRate = (maxSeats / totalSeats) * 100;
     
-    // Set emoji based on agreement rate
+    // Determine majority position
+    let majorityStance = '';
+    if (maxSeats === agreeSeats) majorityStance = 'eens';
+    else if (maxSeats === disagreeSeats) majorityStance = 'oneens';
+    else majorityStance = 'neutraal';
+    
+    // Set emoji based on how unified the coalition is
     if (agreementRate >= 80) {
         indicator.textContent = '🤝';
-        indicator.title = `${Math.round(agreementRate)}% eens - Hoge overeenstemming`;
+        indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Hoge eensgezindheid`;
         indicator.style.fontSize = '1.5em';
     } else if (agreementRate >= 60) {
         indicator.textContent = '😐';
-        indicator.title = `${Math.round(agreementRate)}% eens - Gemiddelde overeenstemming`;
+        indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Gemiddelde eensgezindheid`;
         indicator.style.fontSize = '1.5em';
     } else {
         indicator.textContent = '⚡';
-        indicator.title = `${Math.round(agreementRate)}% eens - Conflict`;
+        indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Verdeeld (${agreeSeats} eens, ${neutralSeats} neutraal, ${disagreeSeats} oneens)`;
         indicator.style.fontSize = '1.5em';
     }
 }
