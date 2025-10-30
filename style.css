@@ -348,6 +348,16 @@ header p {
     background: #f8f9fa;
 }
 
+.statement-agreement-indicator {
+    margin-right: 10px;
+    cursor: help;
+    transition: transform 0.2s;
+}
+
+.statement-agreement-indicator:hover {
+    transform: scale(1.2);
+}
+
 .statement-text {
     font-size: 1.05em;
     color: #333;

@@ -361,6 +361,7 @@ function createStatementItem(statement, index) {
     
     item.innerHTML = `
         <div class="statement-header">
+            <span class="statement-agreement-indicator" id="indicator-${statement.id}"></span>
             <span class="statement-text">${index + 1}. ${cleanText}</span>
             <span class="statement-toggle">▼</span>
         </div>
@@ -391,7 +392,58 @@ function updateStatementBars() {
     statements.forEach(statement => {
         updateFullBar(statement);
         updateCoalitionBar_Statement(statement);
+        updateStatementIndicator(statement);
     });
+}
+
+function updateStatementIndicator(statement) {
+    const indicator = document.getElementById(`indicator-${statement.id}`);
+    if (!indicator) return;
+    
+    if (coalitionParties.size === 0) {
+        indicator.textContent = '';
+        indicator.title = '';
+        return;
+    }
+    
+    // Calculate coalition agreement on this statement
+    const coalitionPartiesList = parties.filter(p => coalitionParties.has(p.name));
+    if (coalitionPartiesList.length < 2) {
+        indicator.textContent = '';
+        return;
+    }
+    
+    // Get stances for coalition parties
+    const stances = coalitionPartiesList.map(p => statement.positions[p.name]);
+    
+    // Count agreements
+    let agreements = 0;
+    let total = 0;
+    for (let i = 0; i < stances.length; i++) {
+        for (let j = i + 1; j < stances.length; j++) {
+            total++;
+            if (stances[i] === stances[j]) {
+                agreements++;
+            }
+        }
+    }
+    
+    const agreementRate = total > 0 ? (agreements / total) * 100 : 0;
+    
+    // Set emoji based on agreement rate
+    if (agreementRate >= 80) {
+        indicator.textContent = '🤝';
+        indicator.title = `${Math.round(agreementRate)}% eens - Hoge overeenstemming`;
+        indicator.style.fontSize = '1.5em';
+    } else if (agreementRate >= 60) {
+        indicator.textContent = '😐';
+        indicator.title = `${Math.round(agreementRate)}% eens - Gemiddelde overeenstemming`;
+        indicator.style.fontSize = '1.5em';
+    } else {
+        indicator.textContent = '⚡';
+        indicator.title = `${Math.round(agreementRate)}% eens - Conflict`;
+        indicator.style.fontSize = '1.5em';
+    }
 }
 
 function updateFullBar(statement) {
