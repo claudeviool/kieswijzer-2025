@@ -275,11 +275,19 @@ function calculateCoalitionAgreement(coalition) {
     
     const seats = coalition.reduce((sum, p) => sum + p.seats, 0);
     const averageAgreement = totalAgreementScore / totalStatements;
-    const agreementRate = averageAgreement * 100;
+    
+    // Apply size penalty: prefer smaller coalitions with equal agreement
+    // Penalty: 2% per party beyond 2 parties (so 3 parties = -2%, 4 parties = -4%, etc.)
+    const sizePenalty = Math.max(0, (coalition.length - 2) * 0.02);
+    const adjustedAgreement = Math.max(0, averageAgreement - sizePenalty);
+    
+    const agreementRate = adjustedAgreement * 100;
     
     return {
         agreementRate: Math.round(agreementRate * 10) / 10,
         averageAgreement: Math.round(averageAgreement * 1000) / 1000,
+        adjustedAgreement: Math.round(adjustedAgreement * 1000) / 1000,
+        coalitionSize: coalition.length,
         totalStatements,
         seats
     };
@@ -329,7 +337,7 @@ function displayCoalitionSuggestions(scoredCoalitions) {
                 </div>
             </div>
             <div class="suggestion-details">
-                Gemiddelde eensgezindheid: ${Math.round(score.averageAgreement * 100)}% (0% = 50-50 verdeeld, 100% = volledig eens)
+                Eensgezindheid: ${Math.round(score.averageAgreement * 100)}% (${score.coalitionSize} partijen, -${(score.coalitionSize - 2) * 2}% grootte-penalty = ${score.agreementRate}%)
             </div>
         `;
         
