@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coalitie Simulator 2025</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇳🇱 Coalitie Simulator 2025</h1>
+            <p>Sleep partijen naar de coalitie om te zien hoe zij over stellingen denken</p>
+        </header>
+
+        <!-- Coalition Builder -->
+        <section class="coalition-builder">
+            <div class="coalition-status">
+                <h2>Coalitie Samenstelling</h2>
+                <div class="majority-bar">
+                    <div class="bar-container">
+                        <div class="coalition-bar" id="coalitionBar"></div>
+                        <div class="majority-line"></div>
+                    </div>
+                    <div class="bar-labels">
+                        <span class="coalition-label">Coalitie: <strong id="coalitionSeats">0</strong> zetels</span>
+                        <span class="majority-label">Meerderheid: 76 zetels</span>
+                        <span class="opposition-label">Oppositie: <strong id="oppositionSeats">150</strong> zetels</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="party-pools">
+                <div class="pool coalition-pool">
+                    <h3>Coalitie</h3>
+                    <div id="coalitionParties" class="party-list drop-zone"></div>
+                </div>
+                
+                <div class="pool available-pool">
+                    <h3>Beschikbare Partijen</h3>
+                    <div id="availableParties" class="party-list drop-zone"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statement Visualizations -->
+        <section class="statements-section">
+            <h2>Standpunten per Stelling</h2>
+            <div class="statement-controls">
+                <button id="expandAll">Alles uitklappen</button>
+                <button id="collapseAll">Alles inklappen</button>
+            </div>
+            <div id="statementsList" class="statements-list"></div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

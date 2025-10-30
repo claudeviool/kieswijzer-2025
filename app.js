@@ -1,0 +1,323 @@
+// Coalition Simulator App
+let parties = [];
+let statements = [];
+let coalitionParties = new Set();
+
+// Load data
+async function loadData() {
+    try {
+        // Load party seats
+        const seatsResponse = await fetch('party_seats_exitpoll_2025.json');
+        const seatsData = await seatsResponse.json();
+        parties = seatsData.parties.filter(p => p.seats > 0);
+        
+        // Load statements
+        const statementsResponse = await fetch('statements_wide.json');
+        const statementsData = await statementsResponse.json();
+        statements = statementsData.statements;
+        
+        initializeApp();
+    } catch (error) {
+        console.error('Error loading data:', error);
+        alert('Fout bij het laden van data. Zorg dat de JSON bestanden beschikbaar zijn.');
+    }
+}
+
+function initializeApp() {
+    renderParties();
+    renderStatements();
+    updateCoalitionBar();
+    setupEventListeners();
+}
+
+// Render party cards
+function renderParties() {
+    const availableContainer = document.getElementById('availableParties');
+    availableContainer.innerHTML = '';
+    
+    parties.forEach(party => {
+        if (!coalitionParties.has(party.name)) {
+            const card = createPartyCard(party);
+            availableContainer.appendChild(card);
+        }
+    });
+}
+
+function createPartyCard(party) {
+    const card = document.createElement('div');
+    card.className = 'party-card';
+    card.draggable = true;
+    card.dataset.partyName = party.name;
+    card.dataset.seats = party.seats;
+    
+    card.innerHTML = `
+        <span class="party-name">${party.name}</span>
+        <span class="party-seats">${party.seats}</span>
+    `;
+    
+    // Drag events
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragend', handleDragEnd);
+    
+    return card;
+}
+
+// Drag and Drop handlers
+function handleDragStart(e) {
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.target.innerHTML);
+    e.dataTransfer.setData('partyName', e.target.dataset.partyName);
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+}
+
+function setupEventListeners() {
+    const dropZones = document.querySelectorAll('.drop-zone');
+    
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+        zone.addEventListener('dragleave', handleDragLeave);
+    });
+    
+    // Statement controls
+    document.getElementById('expandAll').addEventListener('click', () => {
+        document.querySelectorAll('.statement-item').forEach(item => {
+            item.classList.add('expanded');
+        });
+    });
+    
+    document.getElementById('collapseAll').addEventListener('click', () => {
+        document.querySelectorAll('.statement-item').forEach(item => {
+            item.classList.remove('expanded');
+        });
+    });
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-over');
+    return false;
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    e.preventDefault();
+    
+    e.currentTarget.classList.remove('drag-over');
+    
+    const partyName = e.dataTransfer.getData('partyName');
+    const targetZone = e.currentTarget.id;
+    
+    if (targetZone === 'coalitionParties') {
+        coalitionParties.add(partyName);
+    } else {
+        coalitionParties.delete(partyName);
+    }
+    
+    updateUI();
+    return false;
+}
+
+function updateUI() {
+    renderCoalitionParties();
+    renderParties();
+    updateCoalitionBar();
+    updateStatementBars();
+}
+
+function renderCoalitionParties() {
+    const coalitionContainer = document.getElementById('coalitionParties');
+    coalitionContainer.innerHTML = '';
+    
+    parties.forEach(party => {
+        if (coalitionParties.has(party.name)) {
+            const card = createPartyCard(party);
+            coalitionContainer.appendChild(card);
+        }
+    });
+}
+
+function updateCoalitionBar() {
+    const coalitionSeats = calculateCoalitionSeats();
+    const oppositionSeats = 150 - coalitionSeats;
+    const percentage = (coalitionSeats / 150) * 100;
+    
+    document.getElementById('coalitionSeats').textContent = coalitionSeats;
+    document.getElementById('oppositionSeats').textContent = oppositionSeats;
+    
+    const coalitionBar = document.getElementById('coalitionBar');
+    coalitionBar.style.width = `${percentage}%`;
+    coalitionBar.textContent = coalitionSeats >= 76 ? '✓ Meerderheid' : '';
+    
+    // Change color based on majority
+    if (coalitionSeats >= 76) {
+        coalitionBar.style.background = 'linear-gradient(90deg, #28a745 0%, #20c997 100%)';
+    } else {
+        coalitionBar.style.background = 'linear-gradient(90deg, #ffc107 0%, #ff9800 100%)';
+    }
+}
+
+function calculateCoalitionSeats() {
+    let total = 0;
+    parties.forEach(party => {
+        if (coalitionParties.has(party.name)) {
+            total += party.seats;
+        }
+    });
+    return total;
+}
+
+// Render statements
+function renderStatements() {
+    const container = document.getElementById('statementsList');
+    container.innerHTML = '';
+    
+    statements.forEach((statement, index) => {
+        const item = createStatementItem(statement, index);
+        container.appendChild(item);
+    });
+}
+
+function createStatementItem(statement, index) {
+    const item = document.createElement('div');
+    item.className = 'statement-item';
+    item.dataset.statementId = statement.id;
+    
+    // Clean statement text (remove "Icon" artifacts)
+    const cleanText = statement.text.replace(/Icon/g, '');
+    
+    item.innerHTML = `
+        <div class="statement-header">
+            <span class="statement-text">${index + 1}. ${cleanText}</span>
+            <span class="statement-toggle">▼</span>
+        </div>
+        <div class="statement-content">
+            <div class="statement-bars">
+                <div class="bar-section">
+                    <div class="bar-title">Volledige Tweede Kamer (150 zetels)</div>
+                    <div class="stance-bar" id="full-bar-${statement.id}"></div>
+                </div>
+                <div class="bar-section">
+                    <div class="bar-title">Coalitie Standpunt</div>
+                    <div class="coalition-stance-bar" id="coalition-bar-${statement.id}"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Toggle expand/collapse
+    const header = item.querySelector('.statement-header');
+    header.addEventListener('click', () => {
+        item.classList.toggle('expanded');
+    });
+    
+    return item;
+}
+
+function updateStatementBars() {
+    statements.forEach(statement => {
+        updateFullBar(statement);
+        updateCoalitionBar_Statement(statement);
+    });
+}
+
+function updateFullBar(statement) {
+    const barId = `full-bar-${statement.id}`;
+    const bar = document.getElementById(barId);
+    if (!bar) return;
+    
+    // Calculate seat-weighted stances
+    let agreeSeats = 0;
+    let neutralSeats = 0;
+    let disagreeSeats = 0;
+    
+    parties.forEach(party => {
+        const stance = statement.positions[party.name];
+        if (stance === 1) agreeSeats += party.seats;
+        else if (stance === 0) neutralSeats += party.seats;
+        else if (stance === -1) disagreeSeats += party.seats;
+    });
+    
+    const total = agreeSeats + neutralSeats + disagreeSeats;
+    const agreePercent = (agreeSeats / total) * 100;
+    const neutralPercent = (neutralSeats / total) * 100;
+    const disagreePercent = (disagreeSeats / total) * 100;
+    
+    bar.innerHTML = `
+        ${agreeSeats > 0 ? `<div class="stance-segment stance-agree" style="width: ${agreePercent}%">
+            Eens: ${agreeSeats}
+        </div>` : ''}
+        ${neutralSeats > 0 ? `<div class="stance-segment stance-neutral" style="width: ${neutralPercent}%">
+            Neutraal: ${neutralSeats}
+        </div>` : ''}
+        ${disagreeSeats > 0 ? `<div class="stance-segment stance-disagree" style="width: ${disagreePercent}%">
+            Oneens: ${disagreeSeats}
+        </div>` : ''}
+    `;
+}
+
+function updateCoalitionBar_Statement(statement) {
+    const barId = `coalition-bar-${statement.id}`;
+    const bar = document.getElementById(barId);
+    if (!bar) return;
+    
+    if (coalitionParties.size === 0) {
+        bar.innerHTML = '<div class="empty-coalition">Geen coalitie geselecteerd</div>';
+        return;
+    }
+    
+    // Calculate coalition stances
+    let agreeSeats = 0;
+    let neutralSeats = 0;
+    let disagreeSeats = 0;
+    
+    parties.forEach(party => {
+        if (coalitionParties.has(party.name)) {
+            const stance = statement.positions[party.name];
+            if (stance === 1) agreeSeats += party.seats;
+            else if (stance === 0) neutralSeats += party.seats;
+            else if (stance === -1) disagreeSeats += party.seats;
+        }
+    });
+    
+    const total = agreeSeats + neutralSeats + disagreeSeats;
+    
+    if (total === 0) {
+        bar.innerHTML = '<div class="empty-coalition">Geen data beschikbaar</div>';
+        return;
+    }
+    
+    const agreePercent = (agreeSeats / total) * 100;
+    const neutralPercent = (neutralSeats / total) * 100;
+    const disagreePercent = (disagreeSeats / total) * 100;
+    
+    bar.innerHTML = `
+        <div class="stance-bar">
+            ${agreeSeats > 0 ? `<div class="coalition-stance-segment coalition-agree" style="width: ${agreePercent}%">
+                Eens: ${agreeSeats}
+            </div>` : ''}
+            ${neutralSeats > 0 ? `<div class="coalition-stance-segment coalition-neutral" style="width: ${neutralPercent}%">
+                Neutraal: ${neutralSeats}
+            </div>` : ''}
+            ${disagreeSeats > 0 ? `<div class="coalition-stance-segment coalition-disagree" style="width: ${disagreePercent}%">
+                Oneens: ${disagreeSeats}
+            </div>` : ''}
+        </div>
+    `;
+}
+
+// Initialize app when DOM is ready
+document.addEventListener('DOMContentLoaded', loadData);

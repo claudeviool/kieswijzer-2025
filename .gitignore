@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Playwright
+trace.zip
+
+# Debug files
+party_modal_*.html
+empty_dom_dump.html
+
+# Screenshots (test artifacts)
+screenshots/
+shots/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# uv
+.python-version
+uv.lock
