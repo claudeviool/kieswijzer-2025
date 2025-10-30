@@ -651,36 +651,50 @@ function updateStatementIndicator(statement) {
     const maxSeats = Math.max(agreeSeats, neutralSeats, disagreeSeats);
     const agreementRate = (maxSeats / totalSeats) * 100;
     
-    // Determine majority position
+    // Determine majority position and color
     let majorityStance = '';
-    if (maxSeats === agreeSeats) majorityStance = 'eens';
-    else if (maxSeats === disagreeSeats) majorityStance = 'oneens';
-    else majorityStance = 'neutraal';
+    let borderColor = '';
+    let shadowColor = '';
     
-    // Set emoji and visual accent based on how unified the coalition is
+    if (maxSeats === agreeSeats) {
+        majorityStance = 'eens';
+        borderColor = '#28a745';  // Green for agree
+        shadowColor = 'rgba(40, 167, 69, 0.15)';
+    } else if (maxSeats === disagreeSeats) {
+        majorityStance = 'oneens';
+        borderColor = '#dc3545';  // Red for disagree
+        shadowColor = 'rgba(220, 53, 69, 0.15)';
+    } else {
+        majorityStance = 'neutraal';
+        borderColor = '#6c757d';  // Gray for neutral
+        shadowColor = 'rgba(108, 117, 125, 0.15)';
+    }
+    
+    // Set emoji based on unity level, but color based on position
     if (agreementRate >= 80) {
         indicator.textContent = '🤝';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Hoge eensgezindheid`;
         indicator.style.fontSize = '1.5em';
         if (statementItem) {
-            statementItem.style.borderLeft = '4px solid #28a745';
-            statementItem.style.boxShadow = '0 2px 8px rgba(40, 167, 69, 0.15)';
+            statementItem.style.borderLeft = `4px solid ${borderColor}`;
+            statementItem.style.boxShadow = `0 2px 8px ${shadowColor}`;
         }
     } else if (agreementRate >= 60) {
         indicator.textContent = '😐';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Gemiddelde eensgezindheid`;
         indicator.style.fontSize = '1.5em';
         if (statementItem) {
-            statementItem.style.borderLeft = '4px solid #ffc107';
-            statementItem.style.boxShadow = '0 2px 8px rgba(255, 193, 7, 0.15)';
+            statementItem.style.borderLeft = `4px solid ${borderColor}`;
+            statementItem.style.boxShadow = `0 2px 8px ${shadowColor}`;
         }
     } else {
         indicator.textContent = '⚡';
         indicator.title = `${Math.round(agreementRate)}% ${majorityStance} - Verdeeld (${agreeSeats} eens, ${neutralSeats} neutraal, ${disagreeSeats} oneens)`;
         indicator.style.fontSize = '1.5em';
         if (statementItem) {
-            statementItem.style.borderLeft = '4px solid #dc3545';
-            statementItem.style.boxShadow = '0 2px 8px rgba(220, 53, 69, 0.15)';
+            // For divided statements, use yellow/orange to indicate conflict
+            statementItem.style.borderLeft = '4px solid #ffc107';
+            statementItem.style.boxShadow = '0 2px 8px rgba(255, 193, 7, 0.15)';
         }
     }
 }
